@@ -8,6 +8,12 @@
 > **RU** — Веб-приложение для прохождения психологических тестов с сохранением истории и админ-панелью.  
 > **EN** — Web application for taking psychology quizzes with history tracking and an admin panel.
 
+<p align="center">
+  <a href="https://github.com/IbragimovRuslan02/Encounter/actions/workflows/ci.yml"><img src="https://github.com/IbragimovRuslan02/Encounter/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
+  <a href="https://github.com/IbragimovRuslan02/Encounter/releases"><img src="https://img.shields.io/github/v/release/IbragimovRuslan02/Encounter" alt="Latest Release"></a>
+  <a href="https://github.com/IbragimovRuslan02/Encounter/commits/main"><img src="https://img.shields.io/github/last-commit/IbragimovRuslan02/Encounter" alt="Last commit"></a>
+</p>
+
 **English version below** ⬇️
 
 ---

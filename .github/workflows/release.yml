@@ -1,0 +1,57 @@
+name: Release
+
+# Создаём релиз автоматически при пуше тега вида v1.0.0
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: "Create Release"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: "Setup Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: "Install dependencies"
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: "Verify app builds"
+        run: |
+          python -c "from app import create_app; app = create_app(); print('OK: %d routes' % sum(1 for _ in app.url_map.iter_rules()))"
+
+      - name: "Create source archive"
+        run: |
+          mkdir -p release-assets
+          tar --exclude='instance/*.db' \
+              --exclude='__pycache__' \
+              --exclude='*.pyc' \
+              --exclude='.venv' \
+              --exclude='venv' \
+              --exclude='release-assets' \
+              --exclude='.git' \
+              -czf release-assets/source.tar.gz \
+              .
+
+      - name: "Create GitHub Release"
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            release-assets/source.tar.gz
