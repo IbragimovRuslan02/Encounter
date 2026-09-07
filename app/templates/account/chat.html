@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Чат с {{ other.username }} — Encounter{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  <nav class="text-sm text-gray-500 mb-3">
+    <a href="{{ url_for('user.messages_list') }}" class="hover:text-purple-600">← Сообщения</a>
+  </nav>
+
+  <div class="bg-white rounded-lg border border-gray-100 overflow-hidden">
+    <div class="p-4 border-b border-gray-100 flex items-center gap-3">
+      <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold">
+        {{ other.username[0]|upper }}
+      </div>
+      <div>
+        <div class="font-medium">{{ other.username }}</div>
+        {% if conv.product %}<div class="text-xs text-gray-500">о товаре «{{ conv.product.title }}»</div>{% endif %}
+      </div>
+    </div>
+
+    <div class="p-4 space-y-2 max-h-[500px] overflow-y-auto bg-gray-50">
+      {% if conv.messages %}
+        {% for m in conv.messages %}
+        <div class="flex {% if m.sender_id == nav_user.id %}justify-end{% endif %}">
+          <div class="max-w-[75%] px-3 py-2 rounded-lg text-sm
+            {% if m.sender_id == nav_user.id %}bg-purple-600 text-white{% else %}bg-white border border-gray-200{% endif %}">
+            {{ m.text }}
+            <div class="text-[10px] mt-1 {% if m.sender_id == nav_user.id %}text-purple-200{% else %}text-gray-400{% endif %}">
+              {{ m.created_at | dt('%H:%M') }}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p class="text-center text-gray-400 text-sm py-8">Начните диалог…</p>
+      {% endif %}
+    </div>
+
+    <form method="post" class="p-3 border-t border-gray-100 flex gap-2">
+      {{ form.csrf_token }}
+      {{ form.text(class="flex-1 px-3 py-2 border border-gray-200 rounded-md text-sm", placeholder="Введите сообщение…", rows=1) }}
+      <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">→</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

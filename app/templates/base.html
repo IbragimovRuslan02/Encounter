@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Encounter — маркетплейс и тесты{% endblock %}</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/Logo.png') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; }
+    .product-card:hover { transform: translateY(-2px); transition: transform .15s; }
+    .badge-sale { background: linear-gradient(135deg, #ef4444, #f97316); }
+  </style>
+  {% block head %}{% endblock %}
+</head>
+
+<body class="bg-[#f7f8fa] text-[#1e1e1e] min-h-screen flex flex-col">
+
+  <!-- ─────────────── Header ─────────────── -->
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex items-center gap-4 flex-wrap">
+      <a href="{{ url_for('public.home') }}" class="flex items-center gap-2 text-xl font-bold text-purple-700">
+        <img src="{{ url_for('static', filename='images/Logo.png') }}" alt="Encounter" class="w-8 h-8 rounded-full">
+        <span>Encounter</span>
+      </a>
+
+      <form action="{{ url_for('public.catalog') }}" method="get" class="flex-1 min-w-[200px] max-w-2xl">
+        <div class="relative">
+          <input type="text" name="q" value="{{ request.args.get('q','') }}" placeholder="Поиск товаров…"
+                 class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-300">
+          <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+      </form>
+
+      <nav class="flex items-center gap-1 text-sm font-medium">
+        <a href="{{ url_for('public.catalog') }}" class="px-3 py-2 rounded-md hover:bg-gray-100">Каталог</a>
+        <a href="{{ url_for('api.tests_page') }}" class="px-3 py-2 rounded-md hover:bg-gray-100">Тесты</a>
+
+        <a href="{{ url_for('user.cart') if is_logged_in else 'auth.login' }}" class="relative px-3 py-2 rounded-md hover:bg-gray-100 flex items-center gap-1">
+          <img src="{{ url_for('static', filename='images/Cart.png') }}" alt="Корзина" class="w-5 h-5">
+          {% if is_logged_in and cart_count %}
+          <span class="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">{{ cart_count }}</span>
+          {% endif %}
+        </a>
+
+        {% if is_logged_in %}
+          {% if is_admin %}
+            <a href="{{ url_for('admin.admin_dashboard') }}" class="px-3 py-2 rounded-md hover:bg-gray-100 text-purple-700">Админка</a>
+          {% elif is_approved_seller %}
+            <a href="{{ url_for('seller.seller_dashboard') }}" class="px-3 py-2 rounded-md hover:bg-gray-100 text-purple-700">Магазин</a>
+          {% endif %}
+          <div class="relative group">
+            <a href="{{ url_for('user.dashboard') }}" class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100">
+              {% if nav_user.avatar %}
+                <img src="{{ url_for('static', filename='uploads/' + nav_user.avatar) }}" class="w-7 h-7 rounded-full object-cover">
+              {% else %}
+                <div class="w-7 h-7 rounded-full bg-purple-200 text-purple-700 flex items-center justify-center text-sm font-bold">
+                  {{ nav_user.username[0]|upper }}
+                </div>
+              {% endif %}
+              <span class="hidden md:inline">{{ nav_user.username }}</span>
+            </a>
+            <div class="absolute right-0 top-full hidden group-hover:block bg-white border border-gray-100 shadow-lg rounded-md py-1 w-56">
+              <a href="{{ url_for('user.dashboard') }}" class="block px-4 py-2 text-sm hover:bg-gray-50">📊 Кабинет</a>
+              <a href="{{ url_for('user.profile') }}" class="block px-4 py-2 text-sm hover:bg-gray-50">👤 Профиль</a>
+              <a href="{{ url_for('user.orders') }}" class="block px-4 py-2 text-sm hover:bg-gray-50">📦 Мои заказы</a>
+              <a href="{{ url_for('user.favorites') }}" class="block px-4 py-2 text-sm hover:bg-gray-50">❤ Избранное</a>
+              <a href="{{ url_for('user.messages_list') }}" class="block px-4 py-2 text-sm hover:bg-gray-50">💬 Сообщения</a>
+              <a href="{{ url_for('user.test_history') }}" class="block px-4 py-2 text-sm hover:bg-gray-50">🧠 История тестов</a>
+              <div class="border-t border-gray-100 my-1"></div>
+              <a href="{{ url_for('auth.logout') }}" class="block px-4 py-2 text-sm hover:bg-gray-50 text-red-600">Выход</a>
+            </div>
+          </div>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}" class="px-3 py-2 rounded-md hover:bg-gray-100">Вход</a>
+          <a href="{{ url_for('auth.register') }}" class="ml-1 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">Регистрация</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <!-- ─────────────── Flash messages ─────────────── -->
+  <div class="container mx-auto px-4 mt-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, msg in messages %}
+          <div class="mb-3 px-4 py-3 rounded-md text-sm
+            {% if category == 'error' %}bg-red-50 text-red-700 border border-red-200
+            {% elif category == 'success' %}bg-green-50 text-green-700 border border-green-200
+            {% elif category == 'warning' %}bg-yellow-50 text-yellow-700 border border-yellow-200
+            {% else %}bg-blue-50 text-blue-700 border border-blue-200{% endif %}">
+            {{ msg }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- ─────────────── Main ─────────────── -->
+  <main class="container mx-auto px-4 py-6 flex-1">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ─────────────── Footer ─────────────── -->
+  <footer class="bg-white border-t border-gray-100 mt-12">
+    <div class="container mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-4 gap-8 text-sm">
+      <div>
+        <div class="flex items-center gap-2 font-bold text-purple-700 mb-3">
+          <img src="{{ url_for('static', filename='images/Logo.png') }}" class="w-6 h-6 rounded-full">
+          Encounter
+        </div>
+        <p class="text-gray-500">Маркетплейс и психологические тесты в одном месте.</p>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-3">Покупателям</h4>
+        <ul class="space-y-1 text-gray-500">
+          <li><a href="{{ url_for('public.catalog') }}" class="hover:text-purple-600">Каталог</a></li>
+          <li><a href="{{ url_for('user.cart') if is_logged_in else url_for('auth.login') }}" class="hover:text-purple-600">Корзина</a></li>
+          <li><a href="{{ url_for('api.tests_page') }}" class="hover:text-purple-600">Тесты</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-3">Продавцам</h4>
+        <ul class="space-y-1 text-gray-500">
+          <li><a href="{{ url_for('user.become_seller') }}" class="hover:text-purple-600">Стать продавцом</a></li>
+          {% if is_approved_seller %}
+          <li><a href="{{ url_for('seller.seller_dashboard') }}" class="hover:text-purple-600">Кабинет продавца</a></li>
+          {% endif %}
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold mb-3">Мы в соцсетях</h4>
+        <div class="flex gap-3">
+          <a href="#"><img src="{{ url_for('static', filename='images/Github.png') }}" class="w-7 h-7"></a>
+          <a href="#"><img src="{{ url_for('static', filename='images/Instagram.png') }}" class="w-7 h-7"></a>
+          <a href="#"><img src="{{ url_for('static', filename='images/Youtube.png') }}" class="w-7 h-7"></a>
+        </div>
+        <div class="mt-4 text-gray-400 text-xs">© 2026 Encounter. Все права защищены.</div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Заявки продавцов — Админ{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Заявки продавцов</h1>
+
+<div class="flex gap-2 mb-4 text-sm">
+  <a href="{{ url_for('admin.sellers_list', status='pending') }}"
+     class="px-3 py-1.5 rounded {% if current_status == 'pending' %}bg-purple-600 text-white{% else %}bg-white border border-gray-200{% endif %}">
+    На рассмотрении ({{ counts.pending }})
+  </a>
+  <a href="{{ url_for('admin.sellers_list', status='approved') }}"
+     class="px-3 py-1.5 rounded {% if current_status == 'approved' %}bg-purple-600 text-white{% else %}bg-white border border-gray-200{% endif %}">
+    Одобренные ({{ counts.approved }})
+  </a>
+  <a href="{{ url_for('admin.sellers_list', status='rejected') }}"
+     class="px-3 py-1.5 rounded {% if current_status == 'rejected' %}bg-purple-600 text-white{% else %}bg-white border border-gray-200{% endif %}">
+    Отклонённые ({{ counts.rejected }})
+  </a>
+</div>
+
+{% if profiles %}
+<div class="grid md:grid-cols-2 gap-4">
+  {% for p in profiles %}
+  <div class="bg-white rounded-lg p-5 border border-gray-100">
+    <div class="flex items-start gap-3">
+      <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold">
+        {{ p.user.username[0]|upper }}
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="font-semibold">{{ p.shop_name }}</div>
+        <div class="text-xs text-gray-500">от @{{ p.user.username }} · {{ p.applied_at | dt }}</div>
+      </div>
+    </div>
+    {% if p.shop_description %}
+    <p class="text-sm text-gray-600 mt-3">{{ p.shop_description }}</p>
+    {% endif %}
+    <details class="mt-3 text-sm">
+      <summary class="cursor-pointer text-purple-600 hover:underline">Мотивация</summary>
+      <p class="mt-2 text-gray-600">{{ p.motivation }}</p>
+    </details>
+
+    {% if p.status == 'pending' %}
+    <div class="mt-4 flex gap-2">
+      <form action="{{ url_for('admin.seller_approve', profile_id=p.id) }}" method="post" class="flex-1">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="w-full px-3 py-2 bg-green-600 text-white rounded text-sm">✓ Одобрить</button>
+      </form>
+      <button onclick="document.getElementById('reject-{{ p.id }}').classList.toggle('hidden')"
+              class="flex-1 px-3 py-2 border border-red-300 text-red-600 rounded text-sm">✕ Отклонить</button>
+    </div>
+    <form id="reject-{{ p.id }}" action="{{ url_for('admin.seller_reject', profile_id=p.id) }}" method="post" class="hidden mt-3">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <textarea name="reason" placeholder="Причина отклонения (необязательно)…" rows="2"
+                class="w-full px-3 py-2 border border-gray-200 rounded-md text-sm mb-2"></textarea>
+      <button type="submit" class="w-full px-3 py-2 bg-red-600 text-white rounded text-sm">Подтвердить отклонение</button>
+    </form>
+    {% elif p.status == 'rejected' and p.rejection_reason %}
+    <div class="mt-3 text-xs text-red-600 bg-red-50 p-2 rounded">
+      <b>Причина:</b> {{ p.rejection_reason }}
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="bg-white rounded-lg p-12 text-center text-gray-400 border border-gray-100">
+  <p>Нет заявок в этом статусе</p>
+</div>
+{% endif %}
+{% endblock %}

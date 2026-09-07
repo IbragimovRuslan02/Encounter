@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Стать продавцом — Encounter{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  <h1 class="text-2xl font-bold mb-1">🏪 Стать продавцом</h1>
+  <p class="text-gray-500 mb-6">Откройте свой магазин на Encounter и начните продавать.</p>
+
+  {% if profile and profile.status == 'pending' %}
+    <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-6">
+      <h2 class="font-semibold mb-2">Заявка на рассмотрении</h2>
+      <p class="text-sm">Магазин «{{ profile.shop_name }}» подан {{ profile.applied_at | dt }}. Мы свяжемся с вами после проверки.</p>
+    </div>
+
+  {% elif profile and profile.status == 'rejected' %}
+    <div class="bg-red-50 border border-red-200 text-red-800 rounded-lg p-6 mb-4">
+      <h2 class="font-semibold mb-2">Заявка отклонена</h2>
+      {% if profile.rejection_reason %}
+        <p class="text-sm"><b>Причина:</b> {{ profile.rejection_reason }}</p>
+      {% endif %}
+      <p class="text-sm mt-2">Вы можете подать новую заявку, исправив замечания.</p>
+    </div>
+    <div class="bg-white rounded-lg p-6 border border-gray-100">
+      <h2 class="font-semibold mb-4">Повторная заявка</h2>
+      <form method="post" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        <div class="mb-3">
+          {{ form.shop_name.label(class="block text-sm font-medium mb-1") }}
+          {{ form.shop_name(class="w-full px-3 py-2 border border-gray-200 rounded-md") }}
+        </div>
+        <div class="mb-3">
+          {{ form.shop_description.label(class="block text-sm font-medium mb-1") }}
+          {{ form.shop_description(class="w-full px-3 py-2 border border-gray-200 rounded-md", rows=3) }}
+        </div>
+        <div class="mb-3">
+          {{ form.motivation.label(class="block text-sm font-medium mb-1") }}
+          {{ form.motivation(class="w-full px-3 py-2 border border-gray-200 rounded-md", rows=4) }}
+        </div>
+        <div class="mb-4">
+          {{ form.banner.label(class="block text-sm font-medium mb-1") }}
+          {{ form.banner(class="text-sm w-full") }}
+        </div>
+        <button type="submit" class="w-full px-5 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">Подать заявку</button>
+      </form>
+    </div>
+
+  {% elif is_approved_seller %}
+    <div class="bg-green-50 border border-green-200 text-green-800 rounded-lg p-6">
+      <h2 class="font-semibold mb-2">Вы — одобренный продавец</h2>
+      <p>Магазин «{{ nav_user.seller_profile.shop_name }}» активен. <a href="{{ url_for('seller.seller_dashboard') }}" class="underline">Открыть кабинет →</a></p>
+    </div>
+
+  {% else %}
+    <div class="bg-white rounded-lg p-6 border border-gray-100">
+      <form method="post" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        {% if form.errors %}
+          <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+            Проверьте правильность полей. {{ form.errors }}
+          </div>
+        {% endif %}
+
+        <div class="mb-3">
+          {{ form.shop_name.label(class="block text-sm font-medium mb-1") }}
+          {{ form.shop_name(class="w-full px-3 py-2 border border-gray-200 rounded-md") }}
+        </div>
+        <div class="mb-3">
+          {{ form.shop_description.label(class="block text-sm font-medium mb-1") }}
+          {{ form.shop_description(class="w-full px-3 py-2 border border-gray-200 rounded-md", rows=3, placeholder="Чем вы торгуете, что особенного в вашем магазине…") }}
+        </div>
+        <div class="mb-3">
+          {{ form.motivation.label(class="block text-sm font-medium mb-1") }}
+          {{ form.motivation(class="w-full px-3 py-2 border border-gray-200 rounded-md", rows=4, placeholder="Расскажите, почему хотите продавать на Encounter, какой у вас опыт…") }}
+        </div>
+        <div class="mb-4">
+          {{ form.banner.label(class="block text-sm font-medium mb-1") }}
+          {{ form.banner(class="text-sm w-full") }}
+          <p class="text-xs text-gray-400 mt-1">JPG/PNG/WEBP, до 10 МБ</p>
+        </div>
+        <button type="submit" class="w-full px-5 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">
+          Подать заявку
+        </button>
+      </form>
+    </div>
+
+    <div class="mt-6 grid md:grid-cols-3 gap-3 text-sm">
+      <div class="bg-white rounded-lg p-4 border border-gray-100">
+        <div class="text-2xl mb-1">📝</div>
+        <b>Подайте заявку</b>
+        <p class="text-gray-500 text-xs mt-1">Заполните форму с информацией о магазине.</p>
+      </div>
+      <div class="bg-white rounded-lg p-4 border border-gray-100">
+        <div class="text-2xl mb-1">✓</div>
+        <b>Модерация</b>
+        <p class="text-gray-500 text-xs mt-1">Мы рассмотрим заявку в течение 1–3 дней.</p>
+      </div>
+      <div class="bg-white rounded-lg p-4 border border-gray-100">
+        <div class="text-2xl mb-1">🚀</div>
+        <b>Продавайте!</b>
+        <p class="text-gray-500 text-xs mt-1">После одобрения добавляйте товары и принимайте заказы.</p>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

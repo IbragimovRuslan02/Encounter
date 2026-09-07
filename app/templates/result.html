@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Результат — {{ r.test_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+
+  <div class="bg-gradient-to-br from-purple-600 to-pink-500 text-white rounded-2xl p-8 text-center mb-6">
+    <div class="text-5xl mb-3">🎉</div>
+    <h1 class="text-2xl font-bold mb-2">{{ r.test_name }}</h1>
+    <div class="text-3xl font-bold mb-1">{{ r.result_summary }}</div>
+    <div class="text-sm text-purple-100">{{ r.date_passed | dt }}</div>
+  </div>
+
+  <div class="bg-white rounded-lg p-6 border border-gray-100">
+    <h2 class="font-semibold mb-3">Ваши ответы</h2>
+    <ol class="space-y-3 list-decimal pl-5">
+      {% for ans in detailed.answers %}
+      <li class="text-sm text-gray-700">{{ ans.type }} — <span class="text-gray-500">(см. детали)</span></li>
+      {% endfor %}
+    </ol>
+  </div>
+
+  <div class="flex gap-2 mt-6 justify-center">
+    <a href="{{ url_for('api.tests_page') }}" class="px-4 py-2 border border-gray-200 rounded-md hover:bg-gray-50">← К тестам</a>
+    <a href="{{ url_for('api.quiz', test_id=r.test_id) }}" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">Пройти ещё раз</a>
+  </div>
+</div>
+{% endblock %}

@@ -2,6 +2,17 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+.eggs/
+parts/
+*.egg-info/
+.installed.cfg
 
 # Virtual environments
 venv/
@@ -31,6 +42,9 @@ instance/*.db
 *.db
 *.sqlite
 *.sqlite3
+
+# User uploads (created at runtime)
+uploads/
 
 # Testing / coverage
 .pytest_cache/

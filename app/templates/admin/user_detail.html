@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Пользователь {{ user.username }} — Админ{% endblock %}
+
+{% block content %}
+<nav class="text-sm text-gray-500 mb-3">
+  <a href="{{ url_for('admin.users_list') }}" class="hover:text-purple-600">← Пользователи</a>
+</nav>
+
+<div class="flex items-center gap-3 mb-1">
+  <h1 class="text-2xl font-bold">{{ user.username }}</h1>
+  <span class="text-xs px-2 py-1 rounded
+    {% if user.role == 'admin' %}bg-red-100 text-red-700
+    {% elif user.role == 'seller' %}bg-purple-100 text-purple-700
+    {% else %}bg-gray-100 text-gray-700{% endif %}">
+    {{ user.role | role_label }}
+  </span>
+</div>
+<p class="text-gray-500 text-sm mb-6">{{ user.email or '—' }} · с {{ user.created_at | dt }}</p>
+
+<div class="grid md:grid-cols-2 gap-6">
+  <div class="bg-white rounded-lg p-5 border border-gray-100">
+    <h2 class="font-semibold mb-3">Изменить роль</h2>
+    <form action="{{ url_for('admin.user_role_change', user_id=user.id) }}" method="post" class="flex gap-2 flex-wrap">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <select name="role" class="px-3 py-2 border border-gray-200 rounded-md text-sm">
+        <option value="user" {% if user.role == 'user' %}selected{% endif %}>Покупатель</option>
+        <option value="seller" {% if user.role == 'seller' %}selected{% endif %}>Продавец</option>
+        <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Администратор</option>
+      </select>
+      <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-md text-sm hover:bg-purple-700">Сохранить</button>
+    </form>
+  </div>
+
+  <div class="bg-white rounded-lg p-5 border border-gray-100">
+    <h2 class="font-semibold mb-2">Профиль</h2>
+    <dl class="text-sm space-y-1">
+      {% if user.full_name %}<div><b>Имя:</b> {{ user.full_name }}</div>{% endif %}
+      {% if user.phone %}<div><b>Телефон:</b> {{ user.phone }}</div>{% endif %}
+      {% if user.bio %}<div class="text-gray-500 italic pt-1">"{{ user.bio }}"</div>{% endif %}
+    </dl>
+  </div>
+</div>
+
+{% if orders %}
+<div class="mt-6 bg-white rounded-lg p-5 border border-gray-100">
+  <h2 class="font-semibold mb-3">Заказы пользователя</h2>
+  <div class="space-y-2">
+    {% for o in orders %}
+    <div class="flex items-center justify-between text-sm border-b border-gray-100 pb-2 last:border-0">
+      <div>Заказ #{{ o.id }} · {{ o.created_at | dt }}</div>
+      <div><b>{{ o.total | price }}</b> · {{ o.status | status_label }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{% if products %}
+<div class="mt-6 bg-white rounded-lg p-5 border border-gray-100">
+  <h2 class="font-semibold mb-3">Товары продавца</h2>
+  <div class="space-y-2">
+    {% for p in products %}
+    <a href="{{ url_for('admin.products_list') }}" class="flex items-center justify-between text-sm border-b border-gray-100 pb-2 last:border-0 hover:bg-gray-50 -mx-2 px-2">
+      <div>{{ p.title }}</div>
+      <div class="text-gray-500">{{ p.price | price }} · {{ p.stock }} шт.</div>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}

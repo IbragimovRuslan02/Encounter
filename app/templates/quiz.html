@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}{{ test.name }} — Тест{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto" x-data="quizApp()" x-init="init()">
+
+  <div class="mb-6">
+    <div class="flex items-center gap-3 mb-2">
+      <span class="text-3xl">{{ test.icon }}</span>
+      <h1 class="text-2xl font-bold">{{ test.name }}</h1>
+    </div>
+    <p class="text-gray-500 text-sm">{{ test.description }}</p>
+  </div>
+
+  <div class="mb-4 flex items-center gap-3">
+    <div class="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+      <div class="h-2 bg-purple-600 transition-all"
+           :style="'width: ' + ((current + 1) / questions.length * 100) + '%'"></div>
+    </div>
+    <div class="text-sm text-gray-500">
+      <span x-text="current + 1"></span> / <span x-text="questions.length"></span>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-lg p-6 border border-gray-100">
+    <template x-for="(q, qi) in questions" :key="qi">
+      <div x-show="current === qi" x-transition>
+        <div class="text-lg font-medium mb-4" x-text="q.text"></div>
+        <div class="space-y-2">
+          <template x-for="(opt, oi) in q.options" :key="oi">
+            <label class="flex items-start gap-3 p-3 border border-gray-200 rounded-md cursor-pointer hover:border-purple-400 transition-colors"
+                   :class="answers[qi] === opt.type ? 'border-purple-500 bg-purple-50' : ''">
+              <input type="radio" :name="'q' + qi" :value="opt.type"
+                     @change="answers[qi] = opt.type"
+                     :checked="answers[qi] === opt.type"
+                     class="mt-1 text-purple-600 focus:ring-purple-500">
+              <span class="text-sm" x-text="opt.text"></span>
+            </label>
+          </template>
+        </div>
+      </div>
+    </template>
+
+    <div class="mt-6 flex justify-between">
+      <button @click="prev()" :disabled="current === 0"
+              class="px-4 py-2 border border-gray-200 rounded-md hover:bg-gray-50 disabled:opacity-50">
+        ← Назад
+      </button>
+      <button x-show="current < questions.length - 1" @click="next()" :disabled="answers[current] === undefined"
+              class="px-5 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50">
+        Далее →
+      </button>
+      <button x-show="current === questions.length - 1" @click="submit()" :disabled="!allAnswered() || submitting"
+              class="px-5 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50">
+        <span x-show="!submitting">Завершить</span>
+        <span x-show="submitting">Отправка…</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<script>
+function quizApp() {
+  return {
+    current: 0,
+    answers: {},
+    submitting: false,
+    questions: {{ test.questions | tojson }},
+    init() {},
+    next() { if (this.current < this.questions.length - 1) this.current++; },
+    prev() { if (this.current > 0) this.current--; },
+    allAnswered() {
+      return this.questions.every((_, i) => this.answers[i] !== undefined);
+    },
+    async submit() {
+      if (!this.allAnswered()) return;
+      this.submitting = true;
+      const payload = {
+        answers: Object.entries(this.answers).map(([qIdx, type]) => ({q: parseInt(qIdx), type: type}))
+      };
+      try {
+        const r = await fetch('{{ url_for("api.submit", test_id=test_id) }}', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+        const data = await r.json();
+        if (data.ok) {
+          window.location.href = '/result/' + data.result_id;
+        } else {
+          alert('Ошибка: ' + (data.error || 'неизвестно'));
+          this.submitting = false;
+        }
+      } catch (e) {
+        alert('Ошибка сети');
+        this.submitting = false;
+      }
+    }
+  }
+}
+</script>
+{% endblock %}

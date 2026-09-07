@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% import "_macros.html" as ui %}
+
+{% block title %}{{ profile.shop_name }} — Encounter{% endblock %}
+
+{% block content %}
+
+<div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden mb-6">
+  <div class="h-40 bg-gradient-to-br from-purple-500 to-pink-500 relative">
+    {% if profile.banner %}
+      <img src="{{ url_for('static', filename='uploads/' + profile.banner) }}" class="w-full h-full object-cover">
+    {% endif %}
+  </div>
+  <div class="p-6 -mt-12 relative">
+    <div class="flex items-end gap-4 flex-wrap">
+      <div class="w-24 h-24 rounded-full bg-white p-1 shadow">
+        {% if seller.avatar %}
+          <img src="{{ url_for('static', filename='uploads/' + seller.avatar) }}" class="w-full h-full rounded-full object-cover">
+        {% else %}
+          <div class="w-full h-full rounded-full bg-purple-200 text-purple-700 flex items-center justify-center text-3xl font-bold">
+            {{ seller.username[0]|upper }}
+          </div>
+        {% endif %}
+      </div>
+      <div class="flex-1 min-w-[200px]">
+        <h1 class="text-2xl font-bold">{{ profile.shop_name }}</h1>
+        <div class="text-sm text-gray-500 mt-1">
+          @{{ seller.username }} ·
+          ⭐ {{ "%.1f"|format(profile.rating) }} ({{ profile.reviews_count }} отзывов) ·
+          {{ products|length }} товаров ·
+          🛒 {{ profile.total_sales }} продаж
+        </div>
+      </div>
+      {% if is_logged_in and seller.id != nav_user.id %}
+      <form action="{{ url_for('public.contact_seller', product_id=products[0].id if products else 0) }}" method="post" onsubmit="return false">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button disabled class="px-4 py-2 border border-gray-200 rounded-md text-sm text-gray-400">Написать — через карточку товара</button>
+      </form>
+      {% endif %}
+    </div>
+    {% if profile.shop_description %}
+    <p class="text-gray-600 mt-4">{{ profile.shop_description }}</p>
+    {% endif %}
+  </div>
+</div>
+
+<h2 class="text-lg font-semibold mb-4">Товары магазина</h2>
+{{ ui.product_grid(products) }}
+
+{% endblock %}

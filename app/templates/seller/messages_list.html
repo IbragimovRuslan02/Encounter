@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Сообщения — Кабинет продавца{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Сообщения с покупателями</h1>
+
+{% if conversations %}
+<div class="space-y-2">
+  {% for c in conversations %}
+  <a href="{{ url_for('seller.message_view', conversation_id=c.id) }}" class="block bg-white rounded-lg p-4 border border-gray-100 hover:shadow-sm">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold">
+        {{ (c.buyer if nav_user.id == c.seller_id else c.seller_rel).username[0]|upper }}
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="font-medium">
+          {{ (c.buyer if nav_user.id == c.seller_id else c.seller_rel).username }}
+          {% if c.product %}<span class="text-gray-400 text-sm">· {{ c.product.title }}</span>{% endif %}
+        </div>
+        <div class="text-sm text-gray-500 truncate">
+          {% if c.messages %}{{ c.messages[-1].text }}{% else %}Нет сообщений{% endif %}
+        </div>
+      </div>
+      <div class="text-xs text-gray-400">{{ c.last_message_at | dt('%d.%m') }}</div>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="bg-white rounded-lg p-12 text-center text-gray-400 border border-gray-100">
+  <div class="text-6xl mb-3">💬</div>
+  <p>Диалогов пока нет</p>
+</div>
+{% endif %}
+{% endblock %}

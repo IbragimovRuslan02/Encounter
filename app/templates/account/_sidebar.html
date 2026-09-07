@@ -1,0 +1,31 @@
+{# Боковая навигация кабинета. #}
+<aside class="bg-white rounded-lg p-4 border border-gray-100 h-fit">
+  <div class="flex items-center gap-3 mb-4 pb-4 border-b border-gray-100">
+    <div class="w-12 h-12 bg-purple-200 text-purple-700 rounded-full flex items-center justify-center font-bold text-lg">
+      {{ nav_user.username[0]|upper }}
+    </div>
+    <div>
+      <div class="font-medium">{{ nav_user.username }}</div>
+      <div class="text-xs text-gray-500">{{ nav_user.role | role_label }}</div>
+    </div>
+  </div>
+  <nav class="space-y-1 text-sm">
+    <a href="{{ url_for('user.dashboard') }}" class="block px-3 py-2 rounded hover:bg-gray-50">📊 Обзор</a>
+    <a href="{{ url_for('user.profile') }}" class="block px-3 py-2 rounded hover:bg-gray-50">👤 Профиль</a>
+    <a href="{{ url_for('user.cart') }}" class="block px-3 py-2 rounded hover:bg-gray-50">🛒 Корзина</a>
+    <a href="{{ url_for('user.orders') }}" class="block px-3 py-2 rounded hover:bg-gray-50">📦 Заказы</a>
+    <a href="{{ url_for('user.favorites') }}" class="block px-3 py-2 rounded hover:bg-gray-50">❤ Избранное</a>
+    <a href="{{ url_for('user.messages_list') }}" class="block px-3 py-2 rounded hover:bg-gray-50">💬 Сообщения</a>
+    <a href="{{ url_for('user.test_history') }}" class="block px-3 py-2 rounded hover:bg-gray-50">🧠 Тесты</a>
+    <a href="{{ url_for('api.tests_page') }}" class="block px-3 py-2 rounded hover:bg-gray-50">📝 Пройти тест</a>
+    <div class="border-t border-gray-100 my-2"></div>
+    {% if is_approved_seller %}
+      <a href="{{ url_for('seller.seller_dashboard') }}" class="block px-3 py-2 rounded hover:bg-gray-50 text-purple-700">🏪 Кабинет продавца</a>
+    {% else %}
+      <a href="{{ url_for('user.become_seller') }}" class="block px-3 py-2 rounded hover:bg-gray-50 text-purple-700">🏪 Стать продавцом</a>
+    {% endif %}
+    {% if is_admin %}
+      <a href="{{ url_for('admin.admin_dashboard') }}" class="block px-3 py-2 rounded hover:bg-gray-50 text-red-600">⚙ Админ-панель</a>
+    {% endif %}
+  </nav>
+</aside>

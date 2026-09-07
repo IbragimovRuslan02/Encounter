@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Товары — Админ{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Все товары</h1>
+
+{% if products %}
+<div class="bg-white rounded-lg border border-gray-100 overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 text-left text-xs uppercase text-gray-500">
+      <tr>
+        <th class="px-4 py-3">Товар</th>
+        <th class="px-4 py-3">Продавец</th>
+        <th class="px-4 py-3">Цена</th>
+        <th class="px-4 py-3">Остаток</th>
+        <th class="px-4 py-3">Рейтинг</th>
+        <th class="px-4 py-3">Статус</th>
+        <th class="px-4 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for p in products %}
+      <tr>
+        <td class="px-4 py-3 max-w-xs">
+          <a href="{{ url_for('public.product_detail', slug=p.slug) }}" target="_blank" class="font-medium hover:text-purple-600 line-clamp-1">{{ p.title }}</a>
+          <div class="text-xs text-gray-400">{{ p.category.name }}</div>
+        </td>
+        <td class="px-4 py-3 text-gray-500">{{ p.seller.username }}</td>
+        <td class="px-4 py-3"><b>{{ p.price | price }}</b></td>
+        <td class="px-4 py-3 text-center">{{ p.stock }}</td>
+        <td class="px-4 py-3 text-center">
+          {% if p.reviews_count %}{{ "%.1f"|format(p.rating) }} ⭐ ({{ p.reviews_count }}){% else %}—{% endif %}
+        </td>
+        <td class="px-4 py-3">
+          {% if p.is_approved and p.is_active %}
+            <span class="text-xs px-2 py-1 rounded bg-green-100 text-green-700">Активен</span>
+          {% elif not p.is_approved %}
+            <span class="text-xs px-2 py-1 rounded bg-red-100 text-red-700">Скрыт</span>
+          {% else %}
+            <span class="text-xs px-2 py-1 rounded bg-gray-100 text-gray-500">Неактивен</span>
+          {% endif %}
+        </td>
+        <td class="px-4 py-3 text-right whitespace-nowrap">
+          <form action="{{ url_for('admin.product_toggle', product_id=p.id) }}" method="post" class="inline">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="text-purple-600 hover:underline text-xs">{{ 'Показать' if not p.is_approved else 'Скрыть' }}</button>
+          </form>
+          <form action="{{ url_for('admin.product_delete', product_id=p.id) }}" method="post" class="inline"
+                onsubmit="return confirm('Удалить товар?')">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="text-red-500 hover:underline text-xs ml-2">✕</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="text-gray-400">Товаров пока нет.</p>
+{% endif %}
+{% endblock %}

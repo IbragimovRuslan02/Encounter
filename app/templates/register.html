@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Регистрация — Encounter{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+  <h1 class="text-2xl font-bold text-center mb-1">Регистрация</h1>
+  <p class="text-center text-gray-500 text-sm mb-6">Создайте аккаунт, чтобы покупать и продавать</p>
+
+  <form method="post">
+    {{ form.csrf_token }}
+    <div class="mb-3">
+      {{ form.username.label(class="block text-sm font-medium mb-1") }}
+      {{ form.username(class="w-full px-3 py-2 border border-gray-200 rounded-md", placeholder="Только латиница, цифры и _") }}
+    </div>
+    <div class="mb-3">
+      {{ form.email.label(class="block text-sm font-medium mb-1") }}
+      {{ form.email(class="w-full px-3 py-2 border border-gray-200 rounded-md", placeholder="email@example.com (опционально)") }}
+    </div>
+    <div class="mb-3">
+      {{ form.password.label(class="block text-sm font-medium mb-1") }}
+      {{ form.password(class="w-full px-3 py-2 border border-gray-200 rounded-md", placeholder="Минимум 4 символа") }}
+    </div>
+    <div class="mb-4">
+      {{ form.confirm.label(class="block text-sm font-medium mb-1") }}
+      {{ form.confirm(class="w-full px-3 py-2 border border-gray-200 rounded-md", placeholder="Повторите пароль") }}
+    </div>
+    <button type="submit" class="w-full py-2.5 bg-purple-600 text-white rounded-md font-medium hover:bg-purple-700">
+      Зарегистрироваться
+    </button>
+  </form>
+
+  <p class="text-center text-sm text-gray-500 mt-4">
+    Уже есть аккаунт? <a href="{{ url_for('auth.login') }}" class="text-purple-600 hover:underline">Войдите</a>
+  </p>
+</div>
+{% endblock %}

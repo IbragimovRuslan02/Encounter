@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Категории — Админ{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Категории</h1>
+
+<div class="grid md:grid-cols-[1fr_320px] gap-6">
+  <div class="space-y-2">
+    {% for cat in categories %}
+    <div class="bg-white rounded-lg p-4 border border-gray-100">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">{{ cat.icon }}</span>
+          <div>
+            <div class="font-medium">{{ cat.name }}</div>
+            <div class="text-xs text-gray-400">{{ cat.slug }} · {{ cat.products.count() }} товаров</div>
+          </div>
+        </div>
+        <form action="{{ url_for('admin.category_delete', cat_id=cat.id) }}" method="post"
+              onsubmit="return confirm('Удалить категорию?')">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="text-red-500 hover:underline text-sm">✕</button>
+        </form>
+      </div>
+      {% if cat.children %}
+      <div class="ml-8 mt-2 space-y-1">
+        {% for sub in cat.children %}
+        <div class="flex items-center justify-between text-sm text-gray-600">
+          <span>↳ {{ sub.name }} <span class="text-xs text-gray-400">({{ sub.products.count() }})</span></span>
+          <form action="{{ url_for('admin.category_delete', cat_id=sub.id) }}" method="post" class="inline"
+                onsubmit="return confirm('Удалить?')">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="text-red-400 hover:underline text-xs">✕</button>
+          </form>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="bg-white rounded-lg p-5 border border-gray-100 h-fit">
+    <h2 class="font-semibold mb-3">Новая категория</h2>
+    <form method="post">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="mb-2">
+        <label class="block text-sm font-medium mb-1">Название</label>
+        <input type="text" name="name" required class="w-full px-3 py-2 border border-gray-200 rounded-md">
+      </div>
+      <div class="mb-2">
+        <label class="block text-sm font-medium mb-1">Иконка (эмодзи)</label>
+        <input type="text" name="icon" maxlength="4" class="w-full px-3 py-2 border border-gray-200 rounded-md">
+      </div>
+      <div class="mb-3">
+        <label class="block text-sm font-medium mb-1">Родительская категория</label>
+        <select name="parent_id" class="w-full px-3 py-2 border border-gray-200 rounded-md">
+          <option value="">— Нет —</option>
+          {% for c in categories %}
+            <option value="{{ c.id }}">{{ c.icon }} {{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="w-full px-3 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">Создать</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

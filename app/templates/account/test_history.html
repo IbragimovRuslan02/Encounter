@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}История тестов — Encounter{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-6">
+  {% include "account/_sidebar.html" %}
+
+  <div>
+    <h1 class="text-2xl font-bold mb-1">История тестов</h1>
+    <p class="text-gray-500 mb-6">Все ваши прохождения</p>
+
+    {% if results %}
+    <div class="space-y-2">
+      {% for r in results %}
+      <div class="bg-white rounded-lg p-4 border border-gray-100 flex items-center gap-3">
+        <div class="text-2xl">🧠</div>
+        <div class="flex-1">
+          <div class="font-medium">{{ r.test_name }}</div>
+          <div class="text-xs text-gray-500">{{ r.date_passed | dt }}</div>
+        </div>
+        <div class="text-sm">
+          <span class="text-gray-500">Результат:</span> <b>{{ r.result_summary }}</b>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-white rounded-lg p-12 text-center text-gray-400 border border-gray-100">
+      <div class="text-6xl mb-3">🧠</div>
+      <p>Вы ещё не проходили тесты</p>
+      <a href="{{ url_for('api.tests_page') }}" class="inline-block mt-4 px-5 py-2 bg-purple-600 text-white rounded-md">К тестам</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

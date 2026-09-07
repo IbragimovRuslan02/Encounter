@@ -1,6 +1,7 @@
 """Конфигурация Encounter."""
 import os
 import secrets
+from datetime import timedelta
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -15,6 +16,15 @@ class BaseConfig:
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SESSION_COOKIE_HTTPONLY = True
+    PERMANENT_SESSION_LIFETIME = timedelta(days=7)
+
+    # Загрузки
+    UPLOAD_FOLDER = os.environ.get(
+        "UPLOAD_FOLDER", str(BASE_DIR / "uploads")
+    )
+    MAX_CONTENT_LENGTH = 10 * 1024 * 1024  # 10 MB
+
+    ALLOWED_IMAGE_EXT = {"png", "jpg", "jpeg", "webp", "gif"}
 
 
 class DevelopmentConfig(BaseConfig):

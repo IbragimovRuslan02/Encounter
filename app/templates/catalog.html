@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% import "_macros.html" as ui %}
+
+{% block title %}Каталог — Encounter{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-6">
+
+  {# Sidebar: категории #}
+  <aside>
+    <h3 class="text-sm font-semibold text-gray-500 uppercase mb-3">Категории</h3>
+    <ul class="space-y-1">
+      <li>
+        <a href="{{ url_for('public.catalog', **dict(request.args, category='')) }}"
+           class="block px-3 py-2 rounded text-sm {% if not current_category %}bg-purple-50 text-purple-700 font-medium{% else %}hover:bg-gray-100{% endif %}">
+          Все товары
+        </a>
+      </li>
+      {% for cat in categories %}
+        <li>
+          <a href="{{ url_for('public.catalog', category=cat.slug) }}"
+             class="block px-3 py-2 rounded text-sm {% if current_category == cat.slug %}bg-purple-50 text-purple-700 font-medium{% else %}hover:bg-gray-100{% endif %}">
+            <span class="mr-1">{{ cat.icon }}</span> {{ cat.name }}
+          </a>
+          {% if cat.children %}
+          <ul class="ml-4 mt-1 space-y-0.5">
+            {% for sub in cat.children %}
+            <li>
+              <a href="{{ url_for('public.catalog', category=sub.slug) }}"
+                 class="block px-3 py-1.5 rounded text-xs {% if current_category == sub.slug %}bg-purple-50 text-purple-700 font-medium{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                {{ sub.name }}
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </aside>
+
+  {# Main: товары #}
+  <div>
+    <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+      <div>
+        <h1 class="text-2xl font-bold">Каталог</h1>
+        {% if search %}<p class="text-sm text-gray-500">Поиск: «{{ search }}»</p>{% endif %}
+      </div>
+      <div class="flex items-center gap-2 text-sm">
+        <span class="text-gray-500">Сортировка:</span>
+        <select onchange="window.location.href=this.value"
+                class="px-3 py-1.5 border border-gray-200 rounded-md text-sm">
+          {% set base_args = request.args.to_dict() %}
+          {% set sorts = [
+            ('popular', 'По популярности'),
+            ('new', 'Сначала новые'),
+            ('price_asc', 'Дешевле'),
+            ('price_desc', 'Дороже'),
+            ('rating', 'По рейтингу'),
+          ] %}
+          {% for value, label in sorts %}
+            {% set args = base_args.copy() %}{% set _ = args.update({'sort': value}) %}
+            <option value="{{ url_for('public.catalog', **args) }}" {% if current_sort == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    {% if products.items %}
+      {{ ui.product_grid(products.items) }}
+
+      {# Пагинация #}
+      {% if products.pages > 1 %}
+      <div class="mt-8 flex justify-center gap-1">
+        {% set base_args = request.args.to_dict() %}
+        {% if products.has_prev %}
+          {% set args = base_args.copy() %}{% set _ = args.update({'page': products.prev_num}) %}
+          <a href="{{ url_for('public.catalog', **args) }}" class="px-3 py-2 border border-gray-200 rounded hover:bg-gray-50">‹</a>
+        {% endif %}
+        {% for p in products.iter_pages() %}
+          {% if p %}
+            {% set args = base_args.copy() %}{% set _ = args.update({'page': p}) %}
+            {% if p == products.page %}
+              <span class="px-3 py-2 bg-purple-600 text-white rounded">{{ p }}</span>
+            {% else %}
+              <a href="{{ url_for('public.catalog', **args) }}" class="px-3 py-2 border border-gray-200 rounded hover:bg-gray-50">{{ p }}</a>
+            {% endif %}
+          {% else %}
+            <span class="px-2 py-2 text-gray-400">…</span>
+          {% endif %}
+        {% endfor %}
+        {% if products.has_next %}
+          {% set args = base_args.copy() %}{% set _ = args.update({'page': products.next_num}) %}
+          <a href="{{ url_for('public.catalog', **args) }}" class="px-3 py-2 border border-gray-200 rounded hover:bg-gray-50">›</a>
+        {% endif %}
+      </div>
+      {% endif %}
+    {% else %}
+      <div class="bg-white rounded-lg p-12 text-center text-gray-400">
+        <div class="text-6xl mb-3">🔍</div>
+        <p>По вашему запросу ничего не найдено.</p>
+        <a href="{{ url_for('public.catalog') }}" class="inline-block mt-4 text-purple-600 hover:underline">Сбросить фильтры</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

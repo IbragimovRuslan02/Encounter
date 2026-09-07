@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Мои товары — Encounter{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+  <h1 class="text-2xl font-bold">Мои товары</h1>
+  <a href="{{ url_for('seller.product_new') }}" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">+ Добавить товар</a>
+</div>
+
+{% if products %}
+<div class="bg-white rounded-lg border border-gray-100 overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 text-left text-xs uppercase text-gray-500">
+      <tr>
+        <th class="px-4 py-3">Товар</th>
+        <th class="px-4 py-3">Цена</th>
+        <th class="px-4 py-3">Остаток</th>
+        <th class="px-4 py-3">Продано</th>
+        <th class="px-4 py-3">Просмотры</th>
+        <th class="px-4 py-3">Статус</th>
+        <th class="px-4 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for p in products %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-3">
+          <a href="{{ url_for('public.product_detail', slug=p.slug) }}" target="_blank" class="flex items-center gap-3 hover:text-purple-600">
+            <div class="w-12 h-12 bg-gray-100 rounded overflow-hidden shrink-0">
+              {% if p.main_image %}
+                <img src="{{ url_for('static', filename='uploads/' + p.main_image.file_path) }}" class="w-full h-full object-cover">
+              {% else %}📦{% endif %}
+            </div>
+            <div class="min-w-0">
+              <div class="font-medium line-clamp-1">{{ p.title }}</div>
+              <div class="text-xs text-gray-400">{{ p.category.name }}</div>
+            </div>
+          </a>
+        </td>
+        <td class="px-4 py-3 whitespace-nowrap">
+          <b>{{ p.price | price }}</b>
+          {% if p.old_price %}<div class="text-xs text-gray-400 line-through">{{ p.old_price | price }}</div>{% endif %}
+        </td>
+        <td class="px-4 py-3 text-center">
+          <span class="{% if p.stock == 0 %}text-red-500{% elif p.stock < 5 %}text-orange-500{% endif %}">{{ p.stock }}</span>
+        </td>
+        <td class="px-4 py-3 text-center text-gray-500">{{ p.sales_count }}</td>
+        <td class="px-4 py-3 text-center text-gray-500">{{ p.views_count }}</td>
+        <td class="px-4 py-3">
+          {% if not p.is_approved %}
+            <span class="text-xs px-2 py-1 rounded bg-red-100 text-red-700">Скрыт</span>
+          {% elif not p.is_active %}
+            <span class="text-xs px-2 py-1 rounded bg-gray-100 text-gray-500">Неактивен</span>
+          {% else %}
+            <span class="text-xs px-2 py-1 rounded bg-green-100 text-green-700">Активен</span>
+          {% endif %}
+        </td>
+        <td class="px-4 py-3 text-right whitespace-nowrap">
+          <a href="{{ url_for('seller.product_edit', product_id=p.id) }}" class="text-purple-600 hover:underline text-xs">✏</a>
+          <form action="{{ url_for('seller.product_delete', product_id=p.id) }}" method="post" class="inline"
+                onsubmit="return confirm('Удалить «{{ p.title }}»?')">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="text-red-500 hover:underline text-xs ml-2">✕</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="bg-white rounded-lg p-12 text-center text-gray-400 border border-gray-100">
+  <div class="text-6xl mb-3">📦</div>
+  <p>У вас пока нет товаров</p>
+  <a href="{{ url_for('seller.product_new') }}" class="inline-block mt-4 px-5 py-2 bg-purple-600 text-white rounded-md">Создать первый товар</a>
+</div>
+{% endif %}
+{% endblock %}

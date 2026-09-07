@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% import "_macros.html" as ui %}
+
+{% block title %}Encounter — маркетплейс и тесты{% endblock %}
+
+{% block content %}
+
+{# Hero #}
+<section class="bg-gradient-to-br from-purple-600 to-pink-500 rounded-2xl text-white p-8 md:p-12 mb-8 relative overflow-hidden">
+  <div class="relative z-10 max-w-2xl">
+    <h1 class="text-3xl md:text-4xl font-bold mb-3">Покупай. Продавай. Познавай себя.</h1>
+    <p class="text-purple-100 mb-6">Маркетплейс с тысячами товаров и психологические тесты для самопознания — в одном месте.</p>
+    <div class="flex gap-3 flex-wrap">
+      <a href="{{ url_for('public.catalog') }}" class="px-5 py-3 bg-white text-purple-700 rounded-lg font-medium hover:bg-gray-100">Перейти в каталог</a>
+      <a href="{{ url_for('api.tests_page') }}" class="px-5 py-3 bg-purple-800/40 text-white rounded-lg font-medium hover:bg-purple-800/60">Пройти тест</a>
+    </div>
+  </div>
+</section>
+
+{# Категории #}
+{% if top_categories %}
+<section class="mb-10">
+  <h2 class="text-xl font-semibold mb-4">Категории</h2>
+  <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-10 gap-3">
+    {% for cat in top_categories %}
+    <a href="{{ url_for('public.catalog', category=cat.slug) }}"
+       class="flex flex-col items-center justify-center bg-white rounded-lg p-3 hover:shadow-md transition-shadow border border-gray-100">
+      <div class="text-2xl mb-1">{{ cat.icon or "📂" }}</div>
+      <div class="text-xs text-center font-medium text-gray-700">{{ cat.name }}</div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{# Популярные #}
+<section class="mb-10">
+  <div class="flex justify-between items-end mb-4">
+    <h2 class="text-xl font-semibold">Популярное</h2>
+    <a href="{{ url_for('public.catalog', sort='popular') }}" class="text-sm text-purple-600 hover:underline">Все →</a>
+  </div>
+  {{ ui.product_grid(popular_products) }}
+</section>
+
+{# Преимущества #}
+<section class="container mx-auto px-4 grid md:grid-cols-3 gap-6 text-center my-12">
+  <div>
+    <img src="{{ url_for('static', filename='images/Car.png') }}" alt="Доставка" class="mx-auto mb-3 w-16 h-16">
+    <p class="font-semibold">Доставка по всей России</p>
+    <p class="text-gray-500 text-sm mt-1">Сотрудничаем с проверенными службами доставки.</p>
+  </div>
+  <div>
+    <img src="{{ url_for('static', filename='images/Grant.png') }}" alt="Гарантия" class="mx-auto mb-3 w-16 h-16">
+    <p class="font-semibold">Гарантия качества</p>
+    <p class="text-gray-500 text-sm mt-1">Возврат в течение 14 дней, если товар не подошёл.</p>
+  </div>
+  <div>
+    <img src="{{ url_for('static', filename='images/Shild.png') }}" alt="Безопасность" class="mx-auto mb-3 w-16 h-16">
+    <p class="font-semibold">Безопасная оплата</p>
+    <p class="text-gray-500 text-sm mt-1">Защищённые платежи, ваши данные под защитой.</p>
+  </div>
+</section>
+
+{# Новинки #}
+{% if new_products %}
+<section class="mb-10">
+  <div class="flex justify-between items-end mb-4">
+    <h2 class="text-xl font-semibold">Новинки</h2>
+    <a href="{{ url_for('public.catalog', sort='new') }}" class="text-sm text-purple-600 hover:underline">Все →</a>
+  </div>
+  {{ ui.product_grid(new_products) }}
+</section>
+{% endif %}
+
+{% endblock %}

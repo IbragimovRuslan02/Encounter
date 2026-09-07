@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Оформление заказа — Encounter{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Оформление заказа</h1>
+
+<div class="grid md:grid-cols-[1fr_320px] gap-6">
+  <div class="bg-white rounded-lg p-6 border border-gray-100">
+    <h2 class="font-semibold mb-4">Данные доставки</h2>
+    <form method="post">
+      {{ form.csrf_token }}
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          {{ form.delivery_name.label(class="block text-sm font-medium mb-1") }}
+          {{ form.delivery_name(class="w-full px-3 py-2 border border-gray-200 rounded-md") }}
+        </div>
+        <div>
+          {{ form.delivery_phone.label(class="block text-sm font-medium mb-1") }}
+          {{ form.delivery_phone(class="w-full px-3 py-2 border border-gray-200 rounded-md") }}
+        </div>
+        <div class="md:col-span-2">
+          {{ form.delivery_address.label(class="block text-sm font-medium mb-1") }}
+          {{ form.delivery_address(class="w-full px-3 py-2 border border-gray-200 rounded-md") }}
+        </div>
+        <div class="md:col-span-2">
+          {{ form.delivery_comment.label(class="block text-sm font-medium mb-1") }}
+          {{ form.delivery_comment(class="w-full px-3 py-2 border border-gray-200 rounded-md", rows=3) }}
+        </div>
+      </div>
+      <button type="submit" class="mt-5 w-full px-5 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 font-medium">
+        Подтвердить заказ
+      </button>
+    </form>
+  </div>
+
+  <div class="bg-white rounded-lg p-5 border border-gray-100 h-fit">
+    <h2 class="font-semibold mb-3">Ваш заказ</h2>
+    {% for seller_id, items in by_seller.items() %}
+      {% set seller = items[0].product.seller %}
+      <div class="mb-3 pb-3 border-b border-gray-100 last:border-0">
+        <div class="text-xs text-gray-500 mb-2">🏪 {{ seller.seller_profile.shop_name if seller.seller_profile else seller.username }}</div>
+        {% for it in items %}
+        <div class="flex items-center gap-2 text-sm mb-1">
+          <div class="flex-1 truncate">{{ it.product.title }} × {{ it.quantity }}</div>
+          <div>{{ it.subtotal | price }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+    <div class="flex justify-between font-bold text-lg pt-2 border-t border-gray-200">
+      <span>Итого:</span>
+      <span class="text-purple-700">{{ total | price }}</span>
+    </div>
+    <p class="text-xs text-gray-400 mt-3">
+      Если в корзине товары от разных продавцов, будет создано несколько заказов.
+    </p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Админ-панель — Encounter{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-1">⚙ Админ-панель</h1>
+<p class="text-gray-500 mb-6">Управление платформой</p>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="bg-white rounded-lg p-5 border border-gray-100">
+    <div class="text-sm text-gray-500">Пользователей</div>
+    <div class="text-3xl font-bold mt-1">{{ total_users }}</div>
+  </div>
+  <div class="bg-white rounded-lg p-5 border border-gray-100">
+    <div class="text-sm text-gray-500">Продавцов</div>
+    <div class="text-3xl font-bold mt-1">{{ total_sellers }}</div>
+    {% if pending_sellers %}
+    <a href="{{ url_for('admin.sellers_list') }}" class="text-xs text-orange-600 hover:underline">
+      {{ pending_sellers }} на рассмотрении →
+    </a>
+    {% endif %}
+  </div>
+  <div class="bg-white rounded-lg p-5 border border-gray-100">
+    <div class="text-sm text-gray-500">Товаров</div>
+    <div class="text-3xl font-bold mt-1">{{ total_products }}</div>
+    <a href="{{ url_for('admin.products_list') }}" class="text-xs text-purple-600 hover:underline">Управлять →</a>
+  </div>
+  <div class="bg-white rounded-lg p-5 border border-gray-100">
+    <div class="text-sm text-gray-500">Заказов</div>
+    <div class="text-3xl font-bold mt-1">{{ total_orders }}</div>
+    {% if new_orders %}
+    <a href="{{ url_for('admin.orders_list', status='new') }}" class="text-xs text-blue-600 hover:underline">
+      {{ new_orders }} новых →
+    </a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg p-5 mb-6">
+  <div class="text-sm opacity-80">Общая выручка платформы</div>
+  <div class="text-4xl font-bold mt-1">{{ total_revenue | price }}</div>
+</div>
+
+<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+  <a href="{{ url_for('admin.sellers_list') }}" class="bg-white rounded-lg p-6 border border-gray-100 hover:shadow-md">
+    <div class="text-3xl mb-2">🏪</div>
+    <div class="font-semibold">Заявки продавцов</div>
+    <div class="text-sm text-gray-500 mt-1">Одобрение / отклонение</div>
+  </a>
+  <a href="{{ url_for('admin.products_list') }}" class="bg-white rounded-lg p-6 border border-gray-100 hover:shadow-md">
+    <div class="text-3xl mb-2">📦</div>
+    <div class="font-semibold">Все товары</div>
+    <div class="text-sm text-gray-500 mt-1">Модерация каталога</div>
+  </a>
+  <a href="{{ url_for('admin.orders_list') }}" class="bg-white rounded-lg p-6 border border-gray-100 hover:shadow-md">
+    <div class="text-3xl mb-2">📋</div>
+    <div class="font-semibold">Все заказы</div>
+    <div class="text-sm text-gray-500 mt-1">Просмотр и статистика</div>
+  </a>
+  <a href="{{ url_for('admin.users_list') }}" class="bg-white rounded-lg p-6 border border-gray-100 hover:shadow-md">
+    <div class="text-3xl mb-2">👥</div>
+    <div class="font-semibold">Пользователи</div>
+    <div class="text-sm text-gray-500 mt-1">Роли и активность</div>
+  </a>
+  <a href="{{ url_for('admin.categories_list') }}" class="bg-white rounded-lg p-6 border border-gray-100 hover:shadow-md">
+    <div class="text-3xl mb-2">📂</div>
+    <div class="font-semibold">Категории</div>
+    <div class="text-sm text-gray-500 mt-1">Структура каталога</div>
+  </a>
+</div>
+{% endblock %}

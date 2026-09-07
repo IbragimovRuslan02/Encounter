@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% import "_macros.html" as ui %}
+
+{% block title %}{{ product.title }} — Encounter{% endblock %}
+
+{% block content %}
+
+<nav class="text-sm text-gray-500 mb-4">
+  <a href="{{ url_for('public.home') }}" class="hover:text-purple-600">Главная</a>
+  <span class="mx-1">/</span>
+  <a href="{{ url_for('public.catalog') }}" class="hover:text-purple-600">Каталог</a>
+  {% if product.category %}
+    <span class="mx-1">/</span>
+    <a href="{{ url_for('public.catalog', category=product.category.slug) }}" class="hover:text-purple-600">{{ product.category.name }}</a>
+  {% endif %}
+</nav>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+  {# Gallery #}
+  <div>
+    <div class="aspect-square bg-gray-50 rounded-lg overflow-hidden mb-3">
+      {% if product.main_image %}
+        <img id="main-img" src="{{ url_for('static', filename='uploads/' + product.main_image.file_path) }}"
+             alt="{{ product.title }}" class="w-full h-full object-cover">
+      {% else %}
+        <div class="w-full h-full flex items-center justify-center text-gray-300 text-6xl">📦</div>
+      {% endif %}
+    </div>
+    {% if product.images|length > 1 %}
+    <div class="grid grid-cols-4 gap-2">
+      {% for img in product.images %}
+      <button onclick="document.getElementById('main-img').src='{{ url_for('static', filename='uploads/' + img.file_path) }}'"
+              class="aspect-square rounded overflow-hidden border border-gray-200 hover:border-purple-500">
+        <img src="{{ url_for('static', filename='uploads/' + img.file_path) }}" class="w-full h-full object-cover">
+      </button>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  {# Info #}
+  <div>
+    <h1 class="text-2xl font-bold mb-2">{{ product.title }}</h1>
+    <div class="flex items-center gap-3 text-sm text-gray-500 mb-4">
+      {% if product.reviews_count %}
+        <span>⭐ {{ "%.1f"|format(product.rating) }} <span class="text-gray-400">({{ product.reviews_count }} отзыв{{ '' if product.reviews_count == 1 else 'ов' }})</span></span>
+      {% endif %}
+      <span>👁 {{ product.views_count }} просмотров</span>
+    </div>
+
+    <div class="flex items-baseline gap-3 mb-4">
+      <span class="text-3xl font-bold text-purple-700">{{ product.price | price }}</span>
+      {% if product.old_price %}
+        <span class="text-lg text-gray-400 line-through">{{ product.old_price | price }}</span>
+        <span class="text-sm font-bold text-red-500">-{{ product.discount_percent }}%</span>
+      {% endif %}
+    </div>
+
+    {% if product.in_stock %}
+      <p class="text-green-600 text-sm mb-4">✓ В наличии ({{ product.stock }} шт.)</p>
+    {% else %}
+      <p class="text-gray-500 text-sm mb-4">✗ Нет в наличии</p>
+    {% endif %}
+
+    <div class="flex gap-2 mb-6">
+      {% if product.in_stock and is_logged_in %}
+      <form action="{{ url_for('user.cart_add', product_id=product.id) }}" method="post" class="flex-1">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="w-full px-5 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700">
+          🛒 В корзину
+        </button>
+      </form>
+      {% elif not is_logged_in %}
+      <a href="{{ url_for('auth.login', next=url_for('public.product_detail', slug=product.slug)) }}"
+         class="flex-1 text-center px-5 py-3 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700">
+        Войдите, чтобы купить
+      </a>
+      {% endif %}
+
+      {% if is_logged_in %}
+      <form action="{{ url_for('public.toggle_favorite', product_id=product.id) }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50 text-xl"
+                title="{{ 'Удалить из избранного' if in_favorites else 'В избранное' }}">
+          {{ '❤️' if in_favorites else '🤍' }}
+        </button>
+      </form>
+      {% endif %}
+
+      {% if is_logged_in and product.seller_id != nav_user.id %}
+      <form action="{{ url_for('public.contact_seller', product_id=product.id) }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="px-4 py-3 border border-gray-200 rounded-lg hover:bg-gray-50"
+                title="Написать продавцу">💬</button>
+      </form>
+      {% endif %}
+    </div>
+
+    <div class="border-t border-gray-100 pt-4">
+      <a href="{{ url_for('public.shop_view', seller_id=product.seller_id) }}"
+         class="flex items-center gap-3 hover:bg-gray-50 -mx-2 px-2 py-2 rounded">
+        <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 font-bold">
+          {{ product.seller.username[0]|upper }}
+        </div>
+        <div>
+          <div class="text-sm font-medium">🏪 {{ product.seller.seller_profile.shop_name if product.seller.seller_profile else product.seller.username }}</div>
+          {% if product.seller.seller_profile %}
+          <div class="text-xs text-gray-500">⭐ {{ "%.1f"|format(product.seller.seller_profile.rating) }} · {{ product.seller.seller_profile.products_count }} товаров</div>
+          {% endif %}
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+{# Описание #}
+{% if product.description %}
+<section class="mt-8 bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+  <h2 class="text-lg font-semibold mb-3">Описание</h2>
+  <p class="text-gray-700 whitespace-pre-line leading-relaxed">{{ product.description }}</p>
+</section>
+{% endif %}
+
+{# Отзывы #}
+<section class="mt-8">
+  <h2 class="text-lg font-semibold mb-4">Отзывы ({{ reviews|length }})</h2>
+
+  {% if can_review and review_form %}
+  <div class="bg-white rounded-lg p-5 border border-gray-100 mb-4">
+    <h3 class="font-medium mb-3">Оставить отзыв</h3>
+    <form action="{{ url_for('public.add_review', product_id=product.id) }}" method="post">
+      {{ review_form.csrf_token }}
+      <div class="mb-3">
+        {{ review_form.rating.label(class="block text-sm font-medium mb-1") }}
+        {{ review_form.rating(class="px-3 py-2 border border-gray-200 rounded-md w-full max-w-xs") }}
+      </div>
+      <div class="mb-3">
+        {{ review_form.text.label(class="block text-sm font-medium mb-1") }}
+        {{ review_form.text(class="w-full px-3 py-2 border border-gray-200 rounded-md", rows=3, placeholder="Ваш отзыв о товаре…") }}
+      </div>
+      <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">Отправить</button>
+    </form>
+  </div>
+  {% endif %}
+
+  {% if reviews %}
+  <div class="space-y-3">
+    {% for r in reviews %}
+    <div class="bg-white rounded-lg p-4 border border-gray-100">
+      <div class="flex items-center gap-2 mb-1">
+        <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 text-sm font-bold">
+          {{ r.author.username[0]|upper }}
+        </div>
+        <div>
+          <div class="text-sm font-medium">{{ r.author.username }}</div>
+          <div class="text-xs text-gray-400">{{ r.created_at | dt }}</div>
+        </div>
+        <div class="ml-auto text-yellow-500">{% for i in range(r.rating) %}⭐{% endfor %}</div>
+      </div>
+      {% if r.text %}<p class="text-sm text-gray-700 ml-10">{{ r.text }}</p>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="bg-white rounded-lg p-8 text-center text-gray-400">Пока нет отзывов.</div>
+  {% endif %}
+</section>
+
+{# Похожие #}
+{% if similar %}
+<section class="mt-10">
+  <h2 class="text-lg font-semibold mb-4">Похожие товары</h2>
+  {{ ui.product_grid(similar) }}
+</section>
+{% endif %}
+
+{% endblock %}

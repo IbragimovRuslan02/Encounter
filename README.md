@@ -1,18 +1,18 @@
-# 🧠 Encounter — платформа психологических тестов
+# 🛒 Encounter — маркетплейс + психологические тесты
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-3.0.3-black?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 [![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.x-red?logo=sqlalchemy&logoColor=white)](https://www.sqlalchemy.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-> **RU** — Веб-приложение для прохождения психологических тестов с сохранением истории и админ-панелью.  
-> **EN** — Web application for taking psychology quizzes with history tracking and an admin panel.
-
 <p align="center">
   <a href="https://github.com/IbragimovRuslan02/Encounter/actions/workflows/ci.yml"><img src="https://github.com/IbragimovRuslan02/Encounter/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
   <a href="https://github.com/IbragimovRuslan02/Encounter/releases"><img src="https://img.shields.io/github/v/release/IbragimovRuslan02/Encounter" alt="Latest Release"></a>
   <a href="https://github.com/IbragimovRuslan02/Encounter/commits/main"><img src="https://img.shields.io/github/last-commit/IbragimovRuslan02/Encounter" alt="Last commit"></a>
 </p>
+
+> **RU** — Полноценный маркетплейс с каталогом, корзиной, заказами, чатом, отзывами, заявками на продавца, админкой — и психологические тесты в одном приложении.  
+> **EN** — A full marketplace with catalog, cart, orders, chat, reviews, seller applications, admin panel — plus psychology quizzes in one app.
 
 **English version below** ⬇️
 
@@ -26,20 +26,12 @@
   - [Стек](#-стек)
   - [Структура](#-структура)
   - [Быстрый старт](#-быстрый-старт)
+  - [Демо-аккаунты](#-демо-аккаунты)
   - [Конфигурация](#-конфигурация)
   - [Команды](#-команды)
   - [Развёртывание](#-развёртывание)
   - [Автор](#-автор)
 - [🇬🇧 English](#-english)
-  - [About](#-about)
-  - [Features](#-features)
-  - [Tech Stack](#-tech-stack-1)
-  - [Project Structure](#-project-structure-1)
-  - [Quick Start](#-quick-start-1)
-  - [Configuration](#-configuration-1)
-  - [Commands](#-commands-1)
-  - [Deployment](#-deployment)
-  - [Author](#-author-1)
 - [📄 Лицензия / License](#-лицензия--license)
 
 ---
@@ -48,39 +40,51 @@
 
 ### 📖 О проекте
 
-**Encounter** — это веб-приложение с психологическими тестами, написанное на Flask. Пользователи могут зарегистрироваться, пройти тесты, получить интерпретацию результата и сохранить историю прохождений. Администратор управляет пользователями и видит всю статистику.
-
-**Включённые тесты:**
-
-| ID | Название | О чём |
-|----|----------|-------|
-| 🧠 `thinking` | Какой твой тип мышления? | Аналитик / Креативщик / Интуит / Практик |
-| 👔 `style` | Какой твой стиль одежды? | Casual / Classic / Trendy / Avant‑garde |
-| 💼 `career` | Какое направление карьеры тебе подходит? | Корпорация / Творчество / Фриланс / Предпринимательство |
-
-Каждый тест — 15 вопросов с 4 вариантами ответа. Результат определяется по накопленным баллам в каждой шкале.
+**Encounter** — это полноценный e-commerce маркетплейс, расширенный психологическими тестами. Поддерживает три роли пользователей, каталог с категориями, корзину, оформление заказов, чат покупатель-продавец, отзывы с рейтингом, избранное, заявки на продавца с модерацией и административную панель.
 
 ### ✨ Возможности
 
-**Для пользователей:**
-- 🔐 Регистрация и вход (хеширование паролей через `pbkdf2:sha256`)
-- 🧩 Прохождение тестов с подсчётом результата на клиенте
-- 📚 История прохождений с подробной расшифровкой ответов
-- 👤 Личный кабинет (история, последние результаты)
-- 🔒 Защита от перебора и небезопасных действий
+**👤 Покупатель (роль `user`)**
+- 📚 Просмотр каталога с фильтрами по категориям и сортировкой
+- 🔍 Полнотекстовый поиск по названию и описанию
+- 🛒 Корзина с управлением количеством
+- 📦 Оформление заказов с доставкой
+- ❤ Избранное
+- 💬 Чат с продавцами
+- ⭐ Отзывы с рейтингом 1-5
+- 🧠 Психологические тесты (3 шт.)
 
-**Для администратора:**
-- 📊 Дашборд со списком пользователей и общим числом результатов
-- 🔍 Детальная карточка пользователя через API (история его тестов)
-- 🔐 Разграничение ролей (`admin` / `user`)
+**🏪 Продавец (роль `seller`)**
+- Заявка на открытие магазина (одобряется админом)
+- 📊 Дашборд с выручкой и статистикой
+- 📦 Управление товарами: создание, редактирование, удаление, загрузка нескольких фото
+- 🏷 Скидки (старая цена)
+- 📋 Управление заказами со сменой статусов
+- 💬 Чат с покупателями
+- 🏪 Настройка профиля магазина (название, описание, баннер)
+
+**⚙ Администратор (роль `admin`)**
+- 📊 Полный дашборд со статистикой платформы
+- 🏪 Модерация заявок продавцов (одобрение/отклонение с причиной)
+- 📦 Управление всеми товарами (скрытие/удаление)
+- 📂 Управление категориями (создание, удаление)
+- 👥 Управление пользователями (смена ролей)
+- 📋 Просмотр всех заказов
+
+**🧠 Психологические тесты**
+- «Какой твой тип мышления?» (15 вопросов, 4 шкалы)
+- «Какой твой стиль одежды?» (15 вопросов, 4 шкалы)
+- «Какое направление карьеры тебе подходит?» (15 вопросов, 4 шкалы)
+- История прохождений, детальные результаты
 
 ### 🛠 Стек
 
-- **Backend:** Python 3.10+, Flask 3, Flask‑SQLAlchemy
-- **База данных:** SQLite (легко переключается на PostgreSQL/MySQL)
-- **Шаблоны:** Jinja2
-- **Frontend:** HTML5, TailwindCSS (CDN), ванильный JavaScript
-- **Безопасность:** Werkzeug password hashing, разграничение ролей, защита сессий
+- **Backend:** Python 3.10+, Flask 3, Flask-SQLAlchemy, Flask-Login, Flask-WTF
+- **База данных:** SQLite (по умолчанию), легко переключается на PostgreSQL/MySQL
+- **Шаблоны:** Jinja2 + TailwindCSS (CDN)
+- **Frontend:** HTML5, Alpine.js (для тестов), ванильный JavaScript
+- **Загрузки:** Pillow (ресайз картинок)
+- **Безопасность:** CSRF-токены, хеширование паролей (pbkdf2:sha256), разграничение ролей
 
 ### 📁 Структура
 
@@ -89,19 +93,26 @@ Encounter/
 ├── app/                       # Пакет приложения
 │   ├── __init__.py            #   Application factory
 │   ├── config.py              #   Конфигурация (dev/prod)
-│   ├── extensions.py          #   SQLAlchemy
-│   ├── models.py              #   Модели User, TestResult
-│   ├── tests_data.py          #   Каталог тестов (вопросы, шкалы, результаты)
-│   ├── utils.py               #   Декораторы login_required/admin_required
-│   ├── seed.py                #   Инициализация БД (создание админа)
+│   ├── extensions.py          #   SQLAlchemy, Login, CSRF
+│   ├── models.py              #   11 моделей БД
+│   ├── forms.py               #   WTForms-формы
+│   ├── utils.py               #   Утилиты, декораторы, slugify
+│   ├── seed.py                #   Начальные данные
+│   ├── tests_data.py          #   Каталог психологических тестов
+│   ├── templates/             #   Jinja2-шаблоны
+│   │   ├── account/           #     Кабинет покупателя
+│   │   ├── admin/             #     Админ-панель
+│   │   └── seller/            #     Кабинет продавца
 │   └── blueprints/            #   Маршруты
-│       ├── public.py          #     Главная, тесты, результаты
-│       ├── auth.py            #     Логин/регистрация/выход
+│       ├── public.py          #     Главная, каталог, товары
+│       ├── auth.py            #     Логин, регистрация
+│       ├── user.py            #     Кабинет покупателя
+│       ├── seller.py          #     Кабинет продавца
 │       ├── admin.py           #     Админ-панель
-│       └── api.py             #     API отправки ответов
-├── templates/                 # Jinja2-шаблоны
-├── static/                    # CSS, JS, изображения
+│       └── api.py             #     API (тесты)
+├── static/                    # Изображения
 ├── instance/                  # БД SQLite (создаётся автоматически)
+├── uploads/                   # Загруженные фото (создаётся автоматически)
 ├── requirements.txt
 ├── run.py                     # Точка входа
 ├── .env.example
@@ -121,12 +132,8 @@ cd Encounter
 #### 2. Виртуальное окружение
 ```bash
 python -m venv venv
-
-# Linux / macOS
-source venv/bin/activate
-
-# Windows
-venv\Scripts\activate
+source venv/bin/activate  # Linux/macOS
+# или: venv\Scripts\activate  # Windows
 ```
 
 #### 3. Установка зависимостей
@@ -134,10 +141,10 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-#### 4. Настройка окружения (опционально)
+#### 4. Настройка (опционально)
 ```bash
 cp .env.example .env
-# Отредактируйте .env — укажите SECRET_KEY, ADMIN_PASSWORD и т.д.
+# Отредактируйте .env — SECRET_KEY, ADMIN_PASSWORD и т.д.
 ```
 
 #### 5. Запуск
@@ -145,48 +152,51 @@ cp .env.example .env
 python run.py
 ```
 
-Откройте в браузере:
-- 🌐 **Сайт:** http://127.0.0.1:5000
-- 🔐 **Админ-панель:** http://127.0.0.1:5000/admin_dashboard
-  - Логин: `admin` / Пароль: `admin123`
+Откройте: **http://127.0.0.1:5000**
 
-> ⚠️ **Обязательно смените пароль администратора перед публикацией!**
+### 👥 Демо-аккаунты
+
+Приложение создаётся с тестовыми данными (3 продавца, 2 покупателя, 15 товаров, 1 заказ, 4 отзыва):
+
+| Логин | Пароль | Роль | Описание |
+|-------|--------|------|----------|
+| `admin` | `admin123` | Администратор | Полный доступ |
+| `shop1` | `seller123` | Продавец (одобрен) | «ТехноСила» — электроника |
+| `shop2` | `seller123` | Продавец (одобрен) | «Уютный дом» — декор/текстиль |
+| `shop3` | `seller123` | Заявка | Ожидает одобрения |
+| `buyer1` | `buyer123` | Покупатель | С историей заказов |
+| `buyer2` | `buyer123` | Покупатель | Без заказов |
 
 ### ⚙️ Конфигурация
 
-Переменные окружения (см. `.env.example`):
-
 | Переменная | Назначение | По умолчанию |
 |------------|------------|--------------|
-| `FLASK_ENV` | Окружение (`development` / `production`) | `development` |
+| `FLASK_ENV` | Окружение | `development` |
 | `SECRET_KEY` | Секретный ключ Flask | случайный |
-| `DATABASE_URL` | URI базы данных | SQLite в `instance/` |
-| `ADMIN_USERNAME` | Логин администратора | `admin` |
-| `ADMIN_PASSWORD` | Пароль администратора | `admin123` |
+| `DATABASE_URL` | URI базы данных | SQLite |
+| `UPLOAD_FOLDER` | Папка загрузок | `uploads/` |
+| `MAX_CONTENT_LENGTH` | Макс. размер файла | 10 МБ |
 
 ### 💻 Команды
 
 ```bash
-# Запуск в режиме разработки
+# Разработка
 python run.py
 
-# Запуск через Flask CLI
+# Flask CLI
 export FLASK_APP=run.py
-flask run
-
-# Запуск на конкретном порту
 flask run --host=0.0.0.0 --port=8080
 ```
 
 ### 🌐 Развёртывание
 
-#### Production на Gunicorn + Nginx
+#### Gunicorn
 ```bash
 pip install gunicorn
 gunicorn -w 4 -b 0.0.0.0:8000 "run:app"
 ```
 
-#### Docker (пример)
+#### Docker
 ```dockerfile
 FROM python:3.11-slim
 WORKDIR /app
@@ -196,17 +206,10 @@ COPY . .
 CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "run:app"]
 ```
 
-Для production рекомендуется:
-- Заменить SQLite на PostgreSQL
-- Установить `SECRET_KEY` через переменные окружения
-- Настроить HTTPS (Let's Encrypt)
-
 ### 👤 Автор
 
 **Ибрагимов Руслан**  
-📧 Через GitHub: [@IbragimovRuslan02](https://github.com/IbragimovRuslan02)
-
-Проект 2025–2026
+GitHub: [@IbragimovRuslan02](https://github.com/IbragimovRuslan02)
 
 ---
 
@@ -214,38 +217,45 @@ CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "run:app"]
 
 ### 📖 About
 
-**Encounter** is a Flask web application for taking psychology quizzes. Users can register, complete tests, get their result interpretation, and keep a history of all attempts. The admin manages users and reviews aggregate statistics.
-
-**Included tests:**
-
-| ID | Name | What it measures |
-|----|------|------------------|
-| 🧠 `thinking` | What is your thinking style? | Analytical / Creative / Intuitive / Practical |
-| 👔 `style` | What is your clothing style? | Casual / Classic / Trendy / Avant‑garde |
-| 💼 `career` | What career path suits you? | Corporate / Creative / Freelance / Entrepreneur |
-
-Each test is 15 questions × 4 options. The result is calculated from accumulated scores per scale.
+**Encounter** is a full-featured e-commerce marketplace extended with psychology quizzes. It supports three user roles, a category-based catalog, shopping cart, order placement, buyer-seller chat, reviews with ratings, favorites, seller applications with admin moderation, and a complete admin panel.
 
 ### ✨ Features
 
-**For users:**
-- 🔐 Registration and login (`pbkdf2:sha256` password hashing)
-- 🧩 Take quizzes with client-side scoring
-- 📚 Persistent history of attempts with detailed answer breakdown
-- 👤 Personal dashboard (history, latest results)
+**👤 Buyer (`user` role)**
+- Catalog browsing with category filters and sorting
+- Full-text search by title and description
+- Shopping cart with quantity management
+- Order placement with delivery details
+- Favorites
+- Chat with sellers
+- Star reviews (1-5)
+- 3 psychology quizzes
 
-**For admins:**
-- 📊 Dashboard with all users and total results count
-- 🔍 Per-user API endpoint with full attempt history
-- 🔐 Role-based access (`admin` / `user`)
+**🏪 Seller (`seller` role)**
+- Store application (admin-approved)
+- Dashboard with revenue and statistics
+- Product management: create, edit, delete, multiple photo uploads
+- Discounts (old price)
+- Order management with status workflow
+- Chat with buyers
+- Store profile customization (name, description, banner)
+
+**⚙ Administrator (`admin` role)**
+- Full platform statistics dashboard
+- Seller application moderation (approve/reject with reason)
+- All-products management (hide/delete)
+- Category management (create, delete)
+- User management (role changes)
+- All-orders view
 
 ### 🛠 Tech Stack
 
-- **Backend:** Python 3.10+, Flask 3, Flask‑SQLAlchemy
-- **Database:** SQLite (easy switch to PostgreSQL/MySQL)
-- **Templates:** Jinja2
-- **Frontend:** HTML5, TailwindCSS (CDN), vanilla JavaScript
-- **Security:** Werkzeug password hashing, role-based access, session protection
+- **Backend:** Python 3.10+, Flask 3, Flask-SQLAlchemy, Flask-Login, Flask-WTF
+- **Database:** SQLite (default), easy switch to PostgreSQL/MySQL
+- **Templates:** Jinja2 + TailwindCSS (CDN)
+- **Frontend:** HTML5, Alpine.js (quizzes), vanilla JavaScript
+- **Uploads:** Pillow (image resizing)
+- **Security:** CSRF tokens, password hashing (pbkdf2:sha256), role-based access
 
 ### 📁 Project Structure
 
@@ -253,137 +263,63 @@ Each test is 15 questions × 4 options. The result is calculated from accumulate
 Encounter/
 ├── app/                       # App package
 │   ├── __init__.py            #   Application factory
-│   ├── config.py              #   Configuration (dev/prod)
-│   ├── extensions.py          #   SQLAlchemy
-│   ├── models.py              #   User, TestResult models
-│   ├── tests_data.py          #   Tests catalog (questions, scales, results)
-│   ├── utils.py               #   login_required / admin_required decorators
-│   ├── seed.py                #   DB init (default admin user)
+│   ├── config.py              #   Configuration
+│   ├── extensions.py          #   SQLAlchemy, Login, CSRF
+│   ├── models.py              #   11 DB models
+│   ├── forms.py               #   WTForms
+│   ├── utils.py               #   Utilities, decorators
+│   ├── seed.py                #   Demo data
+│   ├── tests_data.py          #   Psychology quiz catalog
+│   ├── templates/             #   Jinja2 templates
 │   └── blueprints/            #   Routes
-│       ├── public.py          #     Home, tests, results
-│       ├── auth.py            #     Login / register / logout
-│       ├── admin.py           #     Admin dashboard
-│       └── api.py             #     Quiz submission API
-├── templates/                 # Jinja2 templates
-├── static/                    # CSS, JS, images
+├── static/                    # Images
 ├── instance/                  # SQLite DB (auto-created)
+├── uploads/                   # User uploads (auto-created)
 ├── requirements.txt
 ├── run.py                     # Entry point
-├── .env.example
-├── .gitignore
-├── LICENSE
 └── README.md
 ```
 
 ### 🚀 Quick Start
 
-#### 1. Clone
 ```bash
 git clone https://github.com/IbragimovRuslan02/Encounter.git
 cd Encounter
-```
-
-#### 2. Virtual environment
-```bash
 python -m venv venv
-
-# Linux / macOS
 source venv/bin/activate
-
-# Windows
-venv\Scripts\activate
-```
-
-#### 3. Install dependencies
-```bash
 pip install -r requirements.txt
-```
-
-#### 4. Environment setup (optional)
-```bash
-cp .env.example .env
-# Edit .env — set SECRET_KEY, ADMIN_PASSWORD, etc.
-```
-
-#### 5. Run
-```bash
 python run.py
 ```
 
-Open in browser:
-- 🌐 **Site:** http://127.0.0.1:5000
-- 🔐 **Admin:** http://127.0.0.1:5000/admin_dashboard
-  - Login: `admin` / Password: `admin123`
+Open **http://127.0.0.1:5000**
 
-> ⚠️ **Change the admin password before deploying to production!**
+### 👥 Demo accounts
 
-### ⚙️ Configuration
-
-Environment variables (see `.env.example`):
-
-| Variable | Purpose | Default |
-|----------|---------|---------|
-| `FLASK_ENV` | Environment (`development` / `production`) | `development` |
-| `SECRET_KEY` | Flask secret key | random |
-| `DATABASE_URL` | Database URI | SQLite in `instance/` |
-| `ADMIN_USERNAME` | Admin login | `admin` |
-| `ADMIN_PASSWORD` | Admin password | `admin123` |
-
-### 💻 Commands
-
-```bash
-# Development server
-python run.py
-
-# Flask CLI
-export FLASK_APP=run.py
-flask run
-
-# Custom host/port
-flask run --host=0.0.0.0 --port=8080
-```
-
-### 🌐 Deployment
-
-#### Production with Gunicorn + Nginx
-```bash
-pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:8000 "run:app"
-```
-
-#### Docker (example)
-```dockerfile
-FROM python:3.11-slim
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8000", "run:app"]
-```
-
-For production we recommend:
-- Switch from SQLite to PostgreSQL
-- Set `SECRET_KEY` via environment variables
-- Configure HTTPS (Let's Encrypt)
+| Login | Password | Role |
+|-------|----------|------|
+| `admin` | `admin123` | Administrator |
+| `shop1` | `seller123` | Approved seller (electronics) |
+| `shop2` | `seller123` | Approved seller (home goods) |
+| `shop3` | `seller123` | Pending seller application |
+| `buyer1` | `buyer123` | Customer with order history |
+| `buyer2` | `buyer123` | Customer |
 
 ### 👤 Author
 
 **Ibragimov Ruslan**  
-📧 Via GitHub: [@IbragimovRuslan02](https://github.com/IbragimovRuslan02)
-
-Project 2025–2026
+GitHub: [@IbragimovRuslan02](https://github.com/IbragimovRuslan02)
 
 ---
 
 ## 📄 Лицензия / License
 
-Проект распространяется под лицензией **MIT**. Подробнее — в файле [LICENSE](./LICENSE).  
-This project is licensed under the **MIT License** — see the [LICENSE](./LICENSE) file for details.
+Проект распространяется под лицензией **MIT** — см. [LICENSE](./LICENSE).  
+This project is licensed under the **MIT License** — see [LICENSE](./LICENSE).
 
 ---
 
 <div align="center">
 
-**⭐ Если проект оказался полезен — поставьте звезду на GitHub! / If this project was useful, please star it on GitHub! ⭐**
+**⭐ If this project was useful, please star it on GitHub! ⭐**
 
 </div>

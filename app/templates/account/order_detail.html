@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% import "_macros.html" as ui %}
+{% block title %}Заказ #{{ order.id }} — Encounter{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-6">
+  {% include "account/_sidebar.html" %}
+
+  <div>
+    <nav class="text-sm text-gray-500 mb-3">
+      <a href="{{ url_for('user.orders') }}" class="hover:text-purple-600">← Мои заказы</a>
+    </nav>
+
+    <div class="flex items-center gap-3 flex-wrap mb-1">
+      <h1 class="text-2xl font-bold">Заказ #{{ order.id }}</h1>
+      {{ ui.order_status_badge(order.status) }}
+    </div>
+    <p class="text-gray-500 text-sm mb-6">от {{ order.created_at | dt }}</p>
+
+    <div class="bg-white rounded-lg p-5 border border-gray-100 mb-4">
+      <h2 class="font-semibold mb-3">Состав заказа</h2>
+      <div class="divide-y divide-gray-100">
+        {% for it in order.items %}
+        <div class="py-3 flex items-center gap-3 first:pt-0 last:pb-0">
+          <div class="flex-1 min-w-0">
+            <a href="{{ url_for('public.product_detail', slug=it.product.slug) }}" class="font-medium hover:text-purple-600 line-clamp-2">
+              {{ it.product_title }}
+            </a>
+            <div class="text-xs text-gray-500">{{ it.price | price }} × {{ it.quantity }}</div>
+          </div>
+          <div class="font-medium">{{ it.subtotal | price }}</div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="mt-3 pt-3 border-t border-gray-200 flex justify-between font-bold text-lg">
+        <span>Итого:</span>
+        <span class="text-purple-700">{{ order.total | price }}</span>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg p-5 border border-gray-100 mb-4">
+      <h2 class="font-semibold mb-3">Доставка</h2>
+      <dl class="text-sm grid grid-cols-[120px_1fr] gap-y-1">
+        <dt class="text-gray-500">Получатель:</dt><dd>{{ order.delivery_name }}</dd>
+        <dt class="text-gray-500">Телефон:</dt><dd>{{ order.delivery_phone }}</dd>
+        <dt class="text-gray-500">Адрес:</dt><dd>{{ order.delivery_address }}</dd>
+        {% if order.delivery_comment %}
+        <dt class="text-gray-500">Комментарий:</dt><dd>{{ order.delivery_comment }}</dd>
+        {% endif %}
+      </dl>
+    </div>
+
+    <div class="bg-white rounded-lg p-5 border border-gray-100 mb-4">
+      <h2 class="font-semibold mb-3">Продавец</h2>
+      <a href="{{ url_for('public.shop_view', seller_id=order.seller.id) }}" class="font-medium hover:text-purple-600">
+        🏪 {{ order.seller.seller_profile.shop_name if order.seller.seller_profile else order.seller.username }}
+      </a>
+      <div class="mt-2">
+        <a href="{{ url_for('public.contact_seller', product_id=order.items[0].product_id) }}"
+           class="text-sm text-purple-600 hover:underline">💬 Написать продавцу</a>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg p-5 border border-gray-100 mb-4 text-sm">
+      <h2 class="font-semibold mb-3">История</h2>
+      <ul class="space-y-1 text-gray-600">
+        <li>📝 Создан: {{ order.created_at | dt }}</li>
+        {% if order.confirmed_at %}<li>✓ Подтверждён: {{ order.confirmed_at | dt }}</li>{% endif %}
+        {% if order.shipped_at %}<li>📦 Отправлен: {{ order.shipped_at | dt }}</li>{% endif %}
+        {% if order.delivered_at %}<li>✅ Доставлен: {{ order.delivered_at | dt }}</li>{% endif %}
+        {% if order.cancelled_at %}<li>❌ Отменён: {{ order.cancelled_at | dt }}</li>{% endif %}
+      </ul>
+    </div>
+
+    <div class="flex gap-2">
+      {% if order.status == 'new' %}
+      <form action="{{ url_for('user.order_cancel', order_id=order.id) }}" method="post"
+            onsubmit="return confirm('Отменить заказ?')">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="px-4 py-2 border border-red-300 text-red-600 rounded-md hover:bg-red-50">Отменить заказ</button>
+      </form>
+      {% endif %}
+      {% if order.status == 'shipped' %}
+      <form action="{{ url_for('user.order_confirm_delivery', order_id=order.id) }}" method="post">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Подтвердить получение</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

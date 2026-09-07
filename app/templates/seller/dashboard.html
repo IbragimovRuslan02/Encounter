@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Кабинет продавца — Encounter{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+  <div>
+    <h1 class="text-2xl font-bold">🏪 {{ nav_user.seller_profile.shop_name }}</h1>
+    <p class="text-gray-500">Кабинет продавца</p>
+  </div>
+  <div class="flex gap-2">
+    <a href="{{ url_for('public.shop_view', seller_id=nav_user.id) }}" class="px-3 py-1.5 border border-gray-200 rounded-md text-sm hover:bg-gray-50">👁 Посмотреть магазин</a>
+    <a href="{{ url_for('seller.shop_profile') }}" class="px-3 py-1.5 border border-gray-200 rounded-md text-sm hover:bg-gray-50">✏ Настройки магазина</a>
+  </div>
+</div>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="bg-white rounded-lg p-5 border border-gray-100">
+    <div class="text-sm text-gray-500">Товаров</div>
+    <div class="text-3xl font-bold mt-1">{{ total_products }}</div>
+    <div class="text-xs text-gray-400 mt-1">{{ active_products }} активных</div>
+  </div>
+  <div class="bg-white rounded-lg p-5 border border-gray-100">
+    <div class="text-sm text-gray-500">Новые заказы</div>
+    <div class="text-3xl font-bold mt-1 text-blue-600">{{ new_orders }}</div>
+    <a href="{{ url_for('seller.orders_list', status='new') }}" class="text-xs text-purple-600 hover:underline">Обработать →</a>
+  </div>
+  <div class="bg-white rounded-lg p-5 border border-gray-100">
+    <div class="text-sm text-gray-500">Заказов за 30 дней</div>
+    <div class="text-3xl font-bold mt-1">{{ orders_30 }}</div>
+  </div>
+  <div class="bg-white rounded-lg p-5 border border-gray-100">
+    <div class="text-sm text-gray-500">Выручка за 30 дней</div>
+    <div class="text-3xl font-bold mt-1 text-purple-700">{{ revenue_30 | price }}</div>
+  </div>
+</div>
+
+<div class="grid md:grid-cols-3 gap-4">
+  <a href="{{ url_for('seller.products_list') }}" class="bg-white rounded-lg p-6 border border-gray-100 hover:shadow-md">
+    <div class="text-3xl mb-2">📦</div>
+    <div class="font-semibold">Мои товары</div>
+    <div class="text-sm text-gray-500 mt-1">Управление каталогом</div>
+  </a>
+  <a href="{{ url_for('seller.orders_list') }}" class="bg-white rounded-lg p-6 border border-gray-100 hover:shadow-md">
+    <div class="text-3xl mb-2">📋</div>
+    <div class="font-semibold">Заказы</div>
+    <div class="text-sm text-gray-500 mt-1">Обработка и статусы</div>
+  </a>
+  <a href="{{ url_for('seller.messages_list') }}" class="bg-white rounded-lg p-6 border border-gray-100 hover:shadow-md">
+    <div class="text-3xl mb-2">💬</div>
+    <div class="font-semibold">Сообщения</div>
+    <div class="text-sm text-gray-500 mt-1">Диалоги с покупателями</div>
+  </a>
+</div>
+{% endblock %}

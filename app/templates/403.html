@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}403 — Encounter{% endblock %}
+{% block content %}
+<div class="text-center py-20">
+  <div class="text-7xl mb-4">🔒</div>
+  <h1 class="text-3xl font-bold mb-2">Доступ запрещён</h1>
+  <p class="text-gray-500 mb-6">У вас нет прав для просмотра этой страницы.</p>
+  <a href="{{ url_for('public.home') }}" class="px-5 py-2.5 bg-purple-600 text-white rounded-md hover:bg-purple-700">На главную</a>
+</div>
+{% endblock %}

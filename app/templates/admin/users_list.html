@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Пользователи — Админ{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Пользователи</h1>
+
+<div class="bg-white rounded-lg border border-gray-100 overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 text-left text-xs uppercase text-gray-500">
+      <tr>
+        <th class="px-4 py-3">Пользователь</th>
+        <th class="px-4 py-3">Email</th>
+        <th class="px-4 py-3">Роль</th>
+        <th class="px-4 py-3">Зарегистрирован</th>
+        <th class="px-4 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for u in users %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-3">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-700 text-xs font-bold">
+              {{ u.username[0]|upper }}
+            </div>
+            <div>
+              <div class="font-medium">{{ u.username }}</div>
+              {% if u.full_name %}<div class="text-xs text-gray-400">{{ u.full_name }}</div>{% endif %}
+            </div>
+          </div>
+        </td>
+        <td class="px-4 py-3 text-gray-500">{{ u.email or '—' }}</td>
+        <td class="px-4 py-3">
+          <span class="text-xs px-2 py-1 rounded
+            {% if u.role == 'admin' %}bg-red-100 text-red-700
+            {% elif u.role == 'seller' %}bg-purple-100 text-purple-700
+            {% else %}bg-gray-100 text-gray-700{% endif %}">
+            {{ u.role | role_label }}
+          </span>
+        </td>
+        <td class="px-4 py-3 text-xs text-gray-500">{{ u.created_at | dt }}</td>
+        <td class="px-4 py-3 text-right">
+          <a href="{{ url_for('admin.user_detail', user_id=u.id) }}" class="text-purple-600 hover:underline text-xs">Подробнее</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
